@@ -1,18 +1,24 @@
-import React, { createContext, useRef, useState } from "react";
-
+import React, { createContext, useReducer } from "react";
 export const CounterContext = createContext(null);
 
-export function CounterProvider({ children }) {
-  const countRef = useRef(0);
-  const [count, setCount] = useState(0);
+const initialState = { count: 0 };
 
-  const increment = () => {
-    countRef.current += 1; // ref — як кеш / історія
-    setCount(countRef.current); // state — для UI
-  };
+function reducer(state, action) {
+  switch (action.type) {
+    case "INCREMENT":
+      return { count: state.count + 1 };
+    default:
+      return state;
+  }
+}
+
+export function CounterProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const increment = () => dispatch({ type: "INCREMENT" });
 
   return (
-    <CounterContext.Provider value={{ count, increment }}>
+    <CounterContext.Provider value={{ count: state.count, increment }}>
       {children}
     </CounterContext.Provider>
   );
